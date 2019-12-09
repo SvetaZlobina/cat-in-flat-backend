@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://127.0.0.1:5432/postgres"
+    password: postgres
+    username: postgres
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:flyway/
+    sql-migration-prefix: V-
+    sql-migration-separator: __
+    schemas: hops
+    table: schema_history
