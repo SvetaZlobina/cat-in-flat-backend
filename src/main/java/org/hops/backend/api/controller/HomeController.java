@@ -1,10 +1,10 @@
 package org.hops.backend.api.controller;
 
 import org.hops.backend.api.entity.Home;
-import org.hops.backend.api.entity.Room;
-import org.hops.backend.api.model.RoomInfo;
+import org.hops.backend.api.entity.User;
+import org.hops.backend.api.model.HomeInfo;
 import org.hops.backend.api.repository.HomeRepository;
-import org.hops.backend.api.repository.RoomRepository;
+import org.hops.backend.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,29 +23,31 @@ import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
-@RequestMapping("room")
-public class RoomController {
+@RequestMapping("home")
+public class HomeController {
     private final HomeRepository homeRepository;
-    private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public RoomController(HomeRepository homeRepository, RoomRepository roomRepository) {
+    public HomeController(
+            HomeRepository homeRepository,
+            UserRepository userRepository) {
         this.homeRepository = homeRepository;
-        this.roomRepository = roomRepository;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
-    public ResponseEntity<RoomInfo> createRoom(
-            @RequestBody Room room,
-            @RequestParam(name = "homeId") long homeId) {
+    public ResponseEntity<HomeInfo> createHome(
+            @RequestBody Home home,
+            @RequestParam(name = "userId") long userId) {
         try {
-            Home home = homeRepository.findById(homeId).orElse(null);
-            if (null == home) {
+            User user = userRepository.findById(userId).orElse(null);
+            if (null == user) {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
-            Room newRoom = roomRepository.save(new Room(home, room.getTitle()));
+            Home newHome = homeRepository.save(new Home(user, home.getTitle()));
             return new ResponseEntity<>(
-                    new RoomInfo(newRoom.getId(), newRoom.getHome().getId(), newRoom.getTitle()),
+                    new HomeInfo(newHome.getId(), newHome.getUser().getId(), newHome.getTitle()),
                     HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
@@ -53,22 +55,22 @@ public class RoomController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RoomInfo>> getRoomsByHome(@RequestParam(name = "homeId") long homeId) {
-        Home home = homeRepository.findById(homeId).orElse(null);
-        if (null == home) {
+    public ResponseEntity<List<HomeInfo>> getHomesByUser(@RequestParam(name = "userId") long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (null == user) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-        List<Room> rooms = roomRepository.findAllByHome(home);
+        List<Home> homes = homeRepository.findAllByUser(user);
         return new ResponseEntity<>(
-                rooms.stream().map(Room::convertToRoomInfo).collect(Collectors.toList()),
+                homes.stream().map(Home::convertToHomeInfo).collect(Collectors.toList()),
                 HttpStatus.OK
         );
     }
 
-    @DeleteMapping("/{roomId}")
-    public ResponseEntity<Void> deleteHome(@PathVariable(value = "roomId") long roomId) {
+    @DeleteMapping("/{homeId}")
+    public ResponseEntity<Void> deleteHome(@PathVariable(value = "homeId") long homeId) {
         try {
-            roomRepository.deleteById(roomId);
+            homeRepository.deleteById(homeId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

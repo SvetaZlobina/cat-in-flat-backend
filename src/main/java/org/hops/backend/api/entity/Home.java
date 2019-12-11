@@ -1,7 +1,6 @@
 package org.hops.backend.api.entity;
 
 import org.hops.backend.api.model.HomeInfo;
-import org.hops.backend.api.model.RoomInfo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,25 +12,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "room", schema = "hops")
-public class Room {
+@Table(name = "home", schema = "hops")
+public class Home {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "home_id")
-    private Home home = null;
+    @JoinColumn(name = "user_id")
+    private User user = null;
 
     @Column(name = "title")
     private String title = null;
 
-    public Room(Home home, String title) {
-        this.home = home;
-        this.title = title;
-    }
-
-    public Room() {
+    public Home() {
     }
 
     public long getId() {
@@ -42,12 +36,12 @@ public class Room {
         this.id = id;
     }
 
-    public Home getHome() {
-        return home;
+    public User getUser() {
+        return user;
     }
 
-    public void setHome(Home home) {
-        this.home = home;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTitle() {
@@ -58,7 +52,12 @@ public class Room {
         this.title = title;
     }
 
-    public RoomInfo convertToRoomInfo() {
-        return new RoomInfo(id, home.getId(), title);
+    public Home(User user, String title) {
+        this.user = user;
+        this.title = title;
+    }
+
+    public HomeInfo convertToHomeInfo() {
+        return new HomeInfo(id, user.getId(), title);
     }
 }

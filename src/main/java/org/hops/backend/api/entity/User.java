@@ -13,6 +13,25 @@ import javax.persistence.Table;
 @Table(name = "client", schema = "hops")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "login")
+    private String login = null;
+
+    @Column(name = "password")
+    private String password = null;
+
+    @Column(name = "name")
+    private String name = null;
+
+    @Column(name = "email")
+    private String email = null;
+
+    @Column(name = "phone")
+    private String phone = null;
+
     public User(
             @JsonProperty("login") String login,
             @JsonProperty("password") String password,
@@ -52,23 +71,4 @@ public class User {
     public String getPhone() {
         return phone;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @Column(name = "login")
-    private String login;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "phone")
-    private String phone;
 }
